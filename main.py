@@ -9,7 +9,7 @@ import pickle
 # Constants
 know_faces_dir = "Images/Known"
 unknow_faces_dir = "Images/Unknown"
-tolerance = 0.6
+tolerance = 0.5
 frame_thickness = 3
 font_thicknewss = 2
 MODEL = "hog" # cnn
@@ -65,11 +65,11 @@ for filename in os.listdir(unknow_faces_dir):
             
             top_left = (face_location[3], face_location[2])
             bottom_right = (face_location[1], face_location[2] + 22)
-
+  
             cv2.rectangle(image, top_left, bottom_right, color, cv2.FILLED)
             cv2.putText(image, match, (face_location[3] + 10, face_location[2] + 15), 
                                 cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 0, 0), font_thicknewss)
     cv2.imshow(filename, image)        
     cv2.waitKey(0)
-    cv2.destroyWindow()
+    cv2.destroyWindow(filename)
     
