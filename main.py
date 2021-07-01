@@ -128,51 +128,58 @@ class RecognizeFace(tk.Frame):
         print("Done loading images")
 
     def loadUnknownFace(self, filename):
+        if len(self.known_names) > 0:
+            print("Processing unknown faces")
+            print(len(self.known_faces))
+            image = face_recognition.load_image_file(filename)
+            locations = face_recognition.face_locations(
+                image, model=self.MODEL)
+            encodings = face_recognition.face_encodings(image, locations)
+            # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            matchFound: bool = False
+            for face_encoding, face_location in zip(encodings, locations):
+                results = face_recognition.compare_faces(
+                    self.known_faces, face_encoding, self.TOLERANCE)
+                match = None
+                if True in results:
+                    matchFound = True
+                    match = self.known_names[results.index(True)]
+                    print(f"Match Found: {match}")
+                    # top, right, bottom, left = face_location
+                    top_left = (face_location[3], face_location[0])
+                    bottom_right = (face_location[1], face_location[2])
+                    color = [93, 245, 66]
+                    cv2.rectangle(image, top_left, bottom_right,
+                                  color, self.FRAME_THICKNESS)
+                    top_left = (face_location[3], face_location[2])
+                    bottom_right = (face_location[1], face_location[2] + 22)
+                    cv2.rectangle(image, top_left, bottom_right,
+                                  color, cv2.FILLED)
+                    cv2.putText(image, match, (face_location[3] + 10, face_location[2] + 15),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), self.FONT_THICKNESS)
+                    pilImg = Image.fromarray(image)
+                    width, height = pilImg.size
+                    pilImg = pilImg.resize(
+                        (round(680/height*width), round(680)))
 
-        print("Processing unknown faces")
-        print(len(self.known_faces))
-        image = face_recognition.load_image_file(filename)
-        locations = face_recognition.face_locations(image, model=self.MODEL)
-        encodings = face_recognition.face_encodings(image, locations)
-        # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        matchFound: bool = False
-        for face_encoding, face_location in zip(encodings, locations):
-            results = face_recognition.compare_faces(
-                self.known_faces, face_encoding, self.TOLERANCE)
-            match = None
-            if True in results:
-                matchFound = True
-                match = self.known_names[results.index(True)]
-                print(f"Match Found: {match}")
-                # top, right, bottom, left = face_location
-                top_left = (face_location[3], face_location[0])
-                bottom_right = (face_location[1], face_location[2])
-                color = [93, 245, 66]
-                cv2.rectangle(image, top_left, bottom_right,
-                              color, self.FRAME_THICKNESS)
-                top_left = (face_location[3], face_location[2])
-                bottom_right = (face_location[1], face_location[2] + 22)
-                cv2.rectangle(image, top_left, bottom_right, color, cv2.FILLED)
-                cv2.putText(image, match, (face_location[3] + 10, face_location[2] + 15),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), self.FONT_THICKNESS)
-                pilImg = Image.fromarray(image)
-                width, height = pilImg.size
-                pilImg = pilImg.resize((round(680/height*width), round(680)))
+                    img = ImageTk.PhotoImage(pilImg)
+                    if self.identifiedImage is None:
+                        self.identifiedImage = tk.Label(image=img)
+                        self.identifiedImage.image = img
+                        self.identifiedImage.pack(
+                            side="right", padx=10, pady=10)
 
-                img = ImageTk.PhotoImage(pilImg)
-                if self.identifiedImage is None:
-                    self.identifiedImage = tk.Label(image=img)
-                    self.identifiedImage.image = img
-                    self.identifiedImage.pack(side="right", padx=10, pady=10)
-
-                else:
-                    self.identifiedImage.configure(image=img)
-                    self.identifiedImage.image = img
-                self.saveImageButton = tk.Button(
-                    self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
-                self.saveImageButton.pack(side="bottom", padx=6, pady=10)
-        if matchFound == False:
-            tk.messagebox.showerror("Error", "No matches found")
+                    else:
+                        self.identifiedImage.configure(image=img)
+                        self.identifiedImage.image = img
+                    self.saveImageButton = tk.Button(
+                        self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
+                    self.saveImageButton.pack(side="bottom", padx=6, pady=10)
+            if matchFound == False:
+                tk.messagebox.showerror("Error", "No matches found")
+        else:
+            tk.messagebox.showerror(
+                "Error", "Database is empty! did you forget to populate the database?")
 
     def saveImage(self, image, fileName):
         print("Saving image")
