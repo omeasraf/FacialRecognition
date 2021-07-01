@@ -14,7 +14,7 @@ FacialRecognition is an app written with [Python 3.9](https://www.python.org/) u
 
 #### How to clone
 ```dsconfig
-git clone omeasraf/FacialRecognition
+git clone https://github.com/omeasraf/FacialRecognition.git
 ```
 
 #### How to install requirements
