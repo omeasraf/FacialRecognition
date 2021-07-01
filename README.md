@@ -7,8 +7,9 @@ FacialRecognition is an app written with [Python 3.9](https://www.python.org/) u
 * Easily create database
 * Easy to use UI
 * Import image right from the app
-* Cached database, you only have to populate the database once
 * Save identified images
+* Multithreading
+* Cached database, you only have to populate the database once
 
 ## How to use
 
