@@ -11,6 +11,11 @@ FacialRecognition is an app written with [Python 3.9](https://www.python.org/) u
 * Multithreading
 * Cached database, you only have to populate the database once
 
+## Screenshots
+| Populating | Identified | Save Image |
+| --- | ----------- | ----------- |
+| <img src="Screenshots/populating.PNG"> | <img src="Screenshots/matched.PNG"> | <img src="Screenshots/save.PNG"> |
+
 ## How to use
 
 #### How to clone
