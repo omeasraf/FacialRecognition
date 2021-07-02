@@ -28,7 +28,12 @@ git clone https://github.com/omeasraf/FacialRecognition.git
 pip3 -r requirements.txt
 ```
 
-#### How to install run
+#### How to run the program
 ```dsconfig
 python3 main.py
 ```
+
+#### Note
+* Make sure to download images into the "Images/Known" directory
+* Initial launch might take couple of hours, depending on the number of images you've downloaded
+* Once all the images has been cached, the app should open within seconds
