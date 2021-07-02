@@ -1,3 +1,4 @@
+from populateData import Populate
 import face_recognition
 import os
 import cv2
@@ -5,14 +6,15 @@ import pickle
 import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
-from alive_progress import alive_bar
+from populateData import Populate
+import time
 from PIL import Image
 from PIL import ImageTk
 import threading
 
 
 class RecognizeFace(tk.Frame):
-    def __init__(self, master=None, showOriginal: bool = False):
+    def __init__(self, master=None, showOriginal: bool = False, known_faces=[], known_names=[]):
         super().__init__(master)
         self.master = master
         self.master.minsize(500, 400)
@@ -20,9 +22,9 @@ class RecognizeFace(tk.Frame):
         self.master.title("Face Recognition")
         self.pack()
         self.create_widgets()
-        self.known_faces = []
-        self.known_names = []
-        self.KNOWN_FACES_DIR = "Images/Known"
+        self.known_faces = known_faces
+        self.known_names = known_names
+
         self.TOLERANCE = 0.5
         self.FRAME_THICKNESS = 3
         self.FONT_THICKNESS = 1
@@ -33,10 +35,10 @@ class RecognizeFace(tk.Frame):
 
     def create_widgets(self):
 
-        self.loadButton = tk.Button(self)
-        self.loadButton["text"] = "Populate Database"
-        self.loadButton["command"] = self.loadImages
-        self.loadButton.pack(side="top")
+        # self.loadButton = tk.Button(self, command=threading.Thread(
+        #     target=self.loadImages).start())
+        # self.loadButton["text"] = "Populate Database"
+        # self.loadButton.pack(side="top")
 
         self.pickImage = tk.Button(self)
         self.pickImage["text"] = "Pick Image"
@@ -67,54 +69,6 @@ class RecognizeFace(tk.Frame):
             self.master.update()
             threading.Thread(target=self.loadUnknownFace(filename)).start()
 
-    def loadFaces(self):
-
-        # self.progressBar.start()
-        self.master.update()
-        self.count = sum([len(files)
-                         for r, d, files in os.walk("Images/Known")])
-        self.current = 0
-        self.progressLabel = tk.Label(
-            self.master, text=f"Current Progress: {self.current}/{self.count}", relief=tk.RAISED)
-        self.progressLabel.pack(side="bottom", padx=10, pady=10)
-        self.progressBar = ttk.Progressbar(
-            root,
-            orient='horizontal',
-            mode='determinate',
-            length=280,
-            maximum=self.count
-        )
-        self.progressBar.pack(side="bottom", padx=10, pady=10)
-        with alive_bar(self.count) as bar:
-            for name in os.listdir(self.KNOWN_FACES_DIR):
-                threading.Thread(target=self.resolveImages(name, bar)).start()
-
-        with open('faces.dat', 'wb') as f:
-            pickle.dump(self.known_faces, f)
-        open("names.txt", 'w+').write(str(self.known_names))
-        self.progressBar.stop()
-        self.progressBar.destroy()
-        self.progressLabel.destroy()
-
-    def resolveImages(self, name, bar):
-        for filename in os.listdir(f"{self.KNOWN_FACES_DIR}/{name}"):
-            self.master.update()
-            image = face_recognition.load_image_file(
-                f"{self.KNOWN_FACES_DIR}/{name}/{filename}")
-            self.master.update
-            encodings = face_recognition.face_encodings(image)
-            self.master.update()
-            if len(encodings) > 0:
-                encoding = encodings[0]
-                self.known_faces.append(encoding)
-                self.known_names.append(name)
-            bar()
-            self.current += 1
-            self.progressBar["value"] = self.current
-            self.progressLabel["text"] = f"Current Progress: {self.current}/{self.count}"
-            self.progressLabel.update()
-            self.master.update()
-
     def loadImages(self):
         print("Loading known faces")
 
@@ -127,9 +81,9 @@ class RecognizeFace(tk.Frame):
                     with open('faces.dat', 'rb') as f:
                         self.known_faces = pickle.load(f)
                 else:
-                    threading.Thread(target=self.loadFaces()).start()
+                    self.loadFaces()
         else:
-            threading.Thread(target=self.loadFaces()).start()
+            self.loadFaces()
 
         print("Done loading images")
 
@@ -196,6 +150,12 @@ class RecognizeFace(tk.Frame):
 
 
 if __name__ == '__main__':
+
+    time.sleep(1)
+    populate = Populate()
+    populate.loadImages()
+    print("Done populating...")
     root = tk.Tk()
-    app = RecognizeFace(master=root)
+    app = RecognizeFace(
+        master=root, known_faces=populate.known_faces, known_names=populate.known_names)
     app.mainloop()
