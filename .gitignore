@@ -6,9 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-# Intentional Ignore
-names.txt
-faces.dat
+
 
 # MacOS filesystem
 .DS_Store

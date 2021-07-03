@@ -20,15 +20,19 @@ class Populate():
         print("\n")
         print("Loading known faces")
 
-        if os.path.exists("names.txt"):
-            with open("names.txt", 'r') as raw_data:
+        if not os.path.isdir("dataset"):
+            os.makedirs("dataset")
+
+        if os.path.exists("dataset/names.txt"):
+            with open("dataset/names.txt", 'r') as raw_data:
                 data = str(raw_data.read())
                 if len(data) > 5:
                     data = eval(data)
                     self.known_names = data
-                    with open('faces.dat', 'rb') as f:
+                    with open('dataset/faces.dat', 'rb') as f:
                         self.known_faces = pickle.load(f)
                     print("Done loading known faces...")
+                    bar.update(value=100)
                 else:
                     print("No known faces found")
                     print("Populating data...")
@@ -67,6 +71,6 @@ class Populate():
         self.save()
 
     def save(self):
-        with open('faces.dat', 'wb') as f:
+        with open('dataset/faces.dat', 'wb') as f:
             pickle.dump(self.known_faces, f)
-        open("names.txt", 'w+').write(str(self.known_names))
+        open("dataset/names.txt", 'w+').write(str(self.known_names))

@@ -25,7 +25,7 @@ class RecognizeFace(tk.Frame):
         self.known_faces = known_faces
         self.known_names = known_names
 
-        self.TOLERANCE = 0.5
+        self.TOLERANCE = 0.3
         self.FRAME_THICKNESS = 3
         self.FONT_THICKNESS = 1
         self.MODEL = "hog"  # cnn
@@ -90,7 +90,7 @@ class RecognizeFace(tk.Frame):
     def loadUnknownFace(self, filename):
         if len(self.known_names) > 0:
             print("Processing unknown faces")
-            print(len(self.known_faces))
+            print(f"{str(len(self.known_faces))} cached image(s) found")
             image = face_recognition.load_image_file(filename)
             locations = face_recognition.face_locations(
                 image, model=self.MODEL)
@@ -105,6 +105,7 @@ class RecognizeFace(tk.Frame):
                     matchFound = True
                     match = self.known_names[results.index(True)]
                     print(f"Match Found: {match}")
+                    print(self.known_faces[results.index(True)])
                     # top, right, bottom, left = face_location
                     top_left = (face_location[3], face_location[0])
                     bottom_right = (face_location[1], face_location[2])
