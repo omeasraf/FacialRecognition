@@ -35,11 +35,6 @@ class RecognizeFace(tk.Frame):
 
     def create_widgets(self):
 
-        # self.loadButton = tk.Button(self, command=threading.Thread(
-        #     target=self.loadImages).start())
-        # self.loadButton["text"] = "Populate Database"
-        # self.loadButton.pack(side="top")
-
         self.pickImage = tk.Button(self)
         self.pickImage["text"] = "Pick Image"
         self.pickImage["command"] = self.select_image
@@ -68,24 +63,6 @@ class RecognizeFace(tk.Frame):
                     self.originalImage.image = img
             self.master.update()
             threading.Thread(target=self.loadUnknownFace(filename)).start()
-
-    def loadImages(self):
-        print("Loading known faces")
-
-        if os.path.exists("names.txt"):
-            with open("names.txt", 'r') as raw_data:
-                data = str(raw_data.read())
-                if len(data) > 5:
-                    data = eval(data)
-                    self.known_names = data
-                    with open('faces.dat', 'rb') as f:
-                        self.known_faces = pickle.load(f)
-                else:
-                    self.loadFaces()
-        else:
-            self.loadFaces()
-
-        print("Done loading images")
 
     def loadUnknownFace(self, filename):
         if len(self.known_names) > 0:
