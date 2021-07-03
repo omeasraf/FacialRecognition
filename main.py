@@ -105,7 +105,6 @@ class RecognizeFace(tk.Frame):
                     matchFound = True
                     match = self.known_names[results.index(True)]
                     print(f"Match Found: {match}")
-                    print(self.known_faces[results.index(True)])
                     # top, right, bottom, left = face_location
                     top_left = (face_location[3], face_location[0])
                     bottom_right = (face_location[1], face_location[2])
