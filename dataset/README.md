@@ -1,0 +1,20 @@
+## Sample Dataset
+
+This dataset contains images facial information about the following people
+* Olivia Rodrigo 
+* Taylor Swift
+* Ed Sheeran 
+* Selena Gomez 
+* Miley Cyrus 
+* Steve Jobs 
+* Tim Cook 
+* Bill Gates 
+* Zayn Malik 
+* Harry Styles 
+* Louis Tomlinson 
+* Liam Payne 
+* Gigi Hadid 
+* Niall Horan 
+* Kendall Jenner
+
+Please delete this dataset and use your own images to generate a new dataset
