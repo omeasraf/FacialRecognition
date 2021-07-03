@@ -1,6 +1,6 @@
 ## Sample Dataset
 
-This dataset contains images facial information about the following people
+This dataset contains facial information about the following people:
 * Olivia Rodrigo 
 * Taylor Swift
 * Ed Sheeran 
