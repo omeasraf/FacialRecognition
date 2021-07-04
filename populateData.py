@@ -33,6 +33,7 @@ class Populate():
                         self.known_faces = pickle.load(f)
                     print("Done loading known faces...")
                     bar.update(value=100)
+                    bar.finish()
                 else:
                     print("No known faces found")
                     print("Populating data...")
@@ -44,7 +45,7 @@ class Populate():
 
     def loadFaces(self):
         self.count = sum([len(files)
-                          for r, d, files in os.walk("Images/Known")])
+                          for r, d, files in os.walk(self.KNOWN_FACES_DIR)])
         # with alive_bar(self.count) as bar:
         bar.maxval = self.count
         for name in os.listdir(self.KNOWN_FACES_DIR):

@@ -25,7 +25,7 @@ class RecognizeFace(tk.Frame):
         self.known_faces = known_faces
         self.known_names = known_names
 
-        self.TOLERANCE = 0.3
+        self.TOLERANCE = 0.5
         self.FRAME_THICKNESS = 3
         self.FONT_THICKNESS = 1
         self.MODEL = "hog"  # cnn
@@ -109,9 +109,15 @@ class RecognizeFace(tk.Frame):
                     else:
                         self.identifiedImage.configure(image=img)
                         self.identifiedImage.image = img
-                    self.saveImageButton = tk.Button(
-                        self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
-                    self.saveImageButton.pack(side="bottom", padx=6, pady=10)
+
+                    if self.saveImageButton == None:
+                        self.saveImageButton = tk.Button(
+                            self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
+                        self.saveImageButton.pack(
+                            side="bottom", padx=6, pady=10)
+                    else:
+                        self.saveImageButton.configure(
+                            command=lambda: self.saveImage(pilImg, filename))
             if matchFound == False:
                 tk.messagebox.showerror("Error", "No matches found")
         else:
