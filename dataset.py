@@ -7,7 +7,7 @@ import numpy as np
 import threading
 
 
-class Generate():
+class Generate:
     """
     Used for creating segmented facial data.
     A new dataset is created for each person
@@ -35,7 +35,7 @@ class Generate():
                                       widgets=[progressbar.Bar('⬛', '[', ']', '⬜'), ' ', progressbar.Percentage()]).start()
         dirList = os.listdir(f"{self.KNOWN_FACES_DIR}/{name}")
         arr = np.array(dirList)
-        newarr = np.array_split(arr, 100)
+        newarr = np.array_split(arr, 120)
         threads = [threading.Thread(
             target=self.resolveImages, args=[arr, name, bar, dirname]) for arr in newarr]
         for thread in threads:
@@ -72,7 +72,7 @@ def main():
 
     dirList = os.listdir("Images/Known")
     arr = np.array(dirList)
-    newarr = np.array_split(arr, 30)
+    newarr = np.array_split(arr, 35)
 
     for arr in newarr:
         gen = Generate()

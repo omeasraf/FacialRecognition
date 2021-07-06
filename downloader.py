@@ -10,9 +10,9 @@ def main():
 
     for name in names:
         t1 = multiprocessing.Process(target=response.download, args=(
-            name, name, 200, {'.jpg', '.png', '.jiff', '.gif', '.jpeg'}))
+            name, name, 100, {'.jpg', '.png', '.jiff', '.gif', '.jpeg'}))
         t2 = multiprocessing.Process(target=response.download, args=(
-            name + " face", name, 200, {'.jpg', '.png', '.jiff', '.gif', '.jpeg'}, True))
+            name + " face", name, 100, {'.jpg', '.png', '.jiff', '.gif', '.jpeg'}, True))
 
         t1.start()
         t2.start()

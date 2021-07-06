@@ -51,6 +51,18 @@ python3 downloader.py
 python3 dataset.py
 ```
 
+#### How to extract frames from a video file
+```dsconfig
+Step 1: Move video files to "Videos" directory
+Step 2: Open "extractFrames.py" file in your favorite text editor
+Step 2 (alt): Alternatively you can import "ExtractFrames" class into your own python project and create a new object
+Step 3: Edit The "person_name" attribute to match the person in the video
+Step 4: Run extractFrames.py file to generate a directory with all the frames from the video
+```
+```dsconfig
+python3 extractFrames.py
+```
+
 #### How to run the program
 ```dsconfig
 python3 main.py

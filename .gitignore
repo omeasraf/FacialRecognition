@@ -8,6 +8,7 @@ __pycache__/
 
 # Ignore dir
 Images/Storage
+TestDataset/
 
 # MacOS filesystem
 .DS_Store

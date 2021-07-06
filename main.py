@@ -110,7 +110,7 @@ class RecognizeFace(tk.Frame):
                         self.identifiedImage.configure(image=img)
                         self.identifiedImage.image = img
 
-                    if self.saveImageButton == None:
+                    if self.saveImageButton is None:
                         self.saveImageButton = tk.Button(
                             self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
                         self.saveImageButton.pack(
@@ -118,7 +118,7 @@ class RecognizeFace(tk.Frame):
                     else:
                         self.saveImageButton.configure(
                             command=lambda: self.saveImage(pilImg, filename))
-            if matchFound == False:
+            if not matchFound:
                 tk.messagebox.showerror("Error", "No matches found")
         else:
             tk.messagebox.showerror(
