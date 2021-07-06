@@ -25,7 +25,7 @@ class RecognizeFace(tk.Frame):
         self.known_faces = known_faces
         self.known_names = known_names
 
-        self.TOLERANCE = 0.5
+        self.tolerance = 0.5
         self.FRAME_THICKNESS = 3
         self.FONT_THICKNESS = 1
         self.MODEL = "hog"  # cnn
@@ -43,6 +43,20 @@ class RecognizeFace(tk.Frame):
         self.quitButton = tk.Button(self, text="Exit", fg="red",
                                     command=self.master.destroy)
         self.quitButton.pack(side="bottom", padx=6, pady=10)
+        defaultValue = tk.StringVar(self.master)
+        defaultValue.set("5")
+        textLabel = tk.Label(self.master, text="Tolerance: ")
+        descLabel = tk.Label(self.master, text="Lower is better...")
+        self.spinBox = tk.Spinbox(
+            self.master, from_=0, to=10, values=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], command=self.assignTolerance, textvariable=defaultValue)
+        textLabel.pack(side=tk.LEFT, anchor=tk.N,
+                       padx=6, pady=10, expand=tk.YES)
+        self.spinBox.pack(side=tk.LEFT, anchor=tk.NW,
+                          padx=6, pady=10, expand=tk.YES)
+        descLabel.pack(side="top", padx=6, pady=10)
+
+    def assignTolerance(self):
+        self.tolerance = float(self.spinBox.get())
 
     def select_image(self):
 
@@ -76,7 +90,7 @@ class RecognizeFace(tk.Frame):
             matchFound: bool = False
             for face_encoding, face_location in zip(encodings, locations):
                 results = face_recognition.compare_faces(
-                    self.known_faces, face_encoding, self.TOLERANCE)
+                    self.known_faces, face_encoding, self.tolerance)
                 match = None
                 if True in results:
                     matchFound = True
