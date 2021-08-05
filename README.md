@@ -14,7 +14,7 @@ FacialRecognition is an app written with [Python 3.9](https://www.python.org/) u
 ## Screenshots
 | Populating | Identified | Save Image |
 | --- | ----------- | ----------- |
-| <img src="Screenshots/populating.PNG"> | <img src="Screenshots/matched.PNG"> | <img src="Screenshots/save.PNG"> |
+| <img src="Screenshots/populating.PNG"> | <img src="Screenshots/matched.JPG"> | <img src="Screenshots/save.PNG"> |
 
 ## How to use
 
