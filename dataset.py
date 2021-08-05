@@ -69,7 +69,7 @@ class Generate:
 
 
 def main():
-
+    print("Initiating all processes...")
     dirList = os.listdir("Images/Known")
     arr = np.array(dirList)
     newarr = np.array_split(arr, 35)

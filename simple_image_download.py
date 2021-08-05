@@ -97,8 +97,8 @@ class simple_image_download:
             google_image_seen = False
             j = 0
             if recursive == True:
-                j = 200
-                limit = 400
+                j = limit
+                limit = limit * 2
             while j < limit:
                 while (True):
                     try:

@@ -1,10 +1,7 @@
 from populateData import Populate
 import face_recognition
-import os
 import cv2
-import pickle
 import tkinter as tk
-from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 from populateData import Populate
 import time
@@ -20,21 +17,20 @@ class RecognizeFace(tk.Frame):
         self.master.minsize(500, 400)
         self.showOriginal = showOriginal
         self.master.title("Face Recognition")
-        self.pack()
-        self.create_widgets()
         self.known_faces = known_faces
         self.known_names = known_names
 
         self.tolerance = 0.5
         self.FRAME_THICKNESS = 3
-        self.FONT_THICKNESS = 1
         self.MODEL = "hog"  # cnn
         self.originalImage = None
         self.identifiedImage = None
         self.saveImageButton = None
 
-    def create_widgets(self):
+        self.pack()
+        self.create_widgets()
 
+    def create_widgets(self):
         self.pickImage = tk.Button(self)
         self.pickImage["text"] = "Pick Image"
         self.pickImage["command"] = self.select_image
@@ -43,17 +39,17 @@ class RecognizeFace(tk.Frame):
         self.quitButton = tk.Button(self, text="Exit", fg="red",
                                     command=self.master.destroy)
         self.quitButton.pack(side="bottom", padx=6, pady=10)
+
         defaultValue = tk.StringVar(self.master)
-        defaultValue.set("5")
         textLabel = tk.Label(self.master, text="Tolerance: ")
-        descLabel = tk.Label(self.master, text="Lower is better...")
+        #Todo: descLabel = tk.Label(self.master, text="Lower is better...")
         self.spinBox = tk.Spinbox(
             self.master, from_=0, to=10, values=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], command=self.assignTolerance, textvariable=defaultValue)
-        textLabel.pack(side=tk.LEFT, anchor=tk.N,
-                       padx=6, pady=10, expand=tk.YES)
-        self.spinBox.pack(side=tk.LEFT, anchor=tk.NW,
-                          padx=6, pady=10, expand=tk.YES)
-        descLabel.pack(side="top", padx=6, pady=10)
+        textLabel.pack(padx=6, pady=10)
+        self.spinBox.pack(padx=6, pady=10)
+        # self.spinBox.place(x=150, y=130)
+        defaultValue.set(str(self.tolerance))
+        # descLabel.pack(side="top", padx=6, pady=10, expand=tk.YES)
 
     def assignTolerance(self):
         self.tolerance = float(self.spinBox.get())
@@ -62,7 +58,6 @@ class RecognizeFace(tk.Frame):
 
         filename = askopenfilename(filetypes=(
             ('all files', '.*'),
-            ('text files', '.txt'),
             ('image files', '.png'),
             ('image files', '.jpg'),))
         if len(filename) > 0:
@@ -76,9 +71,9 @@ class RecognizeFace(tk.Frame):
                     self.originalImage.configure(image=img)
                     self.originalImage.image = img
             self.master.update()
-            threading.Thread(target=self.loadUnknownFace(filename)).start()
+            threading.Thread(target=self.load_unknown_face(filename)).start()
 
-    def loadUnknownFace(self, filename):
+    def load_unknown_face(self, filename):
         if len(self.known_names) > 0:
             print("Processing unknown faces")
             print(f"{str(len(self.known_faces))} cached image(s) found")
@@ -88,6 +83,7 @@ class RecognizeFace(tk.Frame):
             encodings = face_recognition.face_encodings(image, locations)
             # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             matchFound: bool = False
+
             for face_encoding, face_location in zip(encodings, locations):
                 results = face_recognition.compare_faces(
                     self.known_faces, face_encoding, self.tolerance)
@@ -96,6 +92,7 @@ class RecognizeFace(tk.Frame):
                     matchFound = True
                     match = self.known_names[results.index(True)]
                     print(f"Match Found: {match}")
+                    # print(f"Confidence Level: {}")
                     # top, right, bottom, left = face_location
                     top_left = (face_location[3], face_location[0])
                     bottom_right = (face_location[1], face_location[2])
@@ -103,11 +100,20 @@ class RecognizeFace(tk.Frame):
                     cv2.rectangle(image, top_left, bottom_right,
                                   color, self.FRAME_THICKNESS)
                     top_left = (face_location[3], face_location[2])
-                    bottom_right = (face_location[1], face_location[2] + 22)
+                    bottom_right = (face_location[1], face_location[2] + 40)
                     cv2.rectangle(image, top_left, bottom_right,
                                   color, cv2.FILLED)
-                    cv2.putText(image, match, (face_location[3] + 10, face_location[2] + 15),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), self.FONT_THICKNESS)
+
+                    img_size = image.shape[1::-1]
+                    font_scale = (img_size[0] * img_size[1])/(1000 * 1000)
+                    font_scale = 0.5 if font_scale < 0.5 else font_scale
+                    font_scale = 3 if font_scale > 10 else font_scale
+
+                    font_thickness = 3 if font_scale >= 2 else 1
+
+                    cv2.putText(image, match, (face_location[3], face_location[2] + 20),
+                                cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), font_thickness)
+                    print(font_scale)
                     pilImg = Image.fromarray(image)
                     width, height = pilImg.size
                     pilImg = pilImg.resize(
@@ -118,7 +124,7 @@ class RecognizeFace(tk.Frame):
                         self.identifiedImage = tk.Label(image=img)
                         self.identifiedImage.image = img
                         self.identifiedImage.pack(
-                            side="right", padx=10, pady=10)
+                            side="bottom", padx=10, pady=10)
 
                     else:
                         self.identifiedImage.configure(image=img)
@@ -150,7 +156,9 @@ if __name__ == '__main__':
 
     time.sleep(1)
     populate = Populate()
-    populate.loadImages()
+    # populate.load_images()  # Use this to populate the dataset from a dataset/ directory
+    # Use this to populate the dataset from all subdirectories of dataset/
+    populate.load_all_images()
     print("Done populating...")
     root = tk.Tk()
     app = RecognizeFace(
