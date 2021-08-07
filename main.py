@@ -11,9 +11,14 @@ import threading
 
 
 class RecognizeFace(tk.Frame):
-    def __init__(self, master=None, show_original: bool = False, known_faces=[], known_names=[]):
+    def __init__(self, master=None, show_original: bool = False, known_faces=None, known_names=None):
         super().__init__(master)
+        if known_names is None:
+            known_names = []
+        if known_faces is None:
+            known_faces = []
         self.master = master
+        self.master.configure(background='#282a35')
         self.master.minsize(500, 400)
         self.show_original = show_original
         self.master.title("Face Recognition")
@@ -26,30 +31,35 @@ class RecognizeFace(tk.Frame):
         self.originalImage = None
         self.identifiedImage = None
         self.saveImageButton = None
+        self.container = tk.Frame(background='#282a35', width=200, height=70)
+        self.container.pack(pady=5)
+        self.container.pack_propagate(False)
 
         self.pack()
         self.create_widgets()
 
     def create_widgets(self):
-        self.pickImage = tk.Button(self)
-        self.pickImage["text"] = "Pick Image"
-        self.pickImage["command"] = self.select_image
-        self.pickImage.pack(side="top", padx=6, pady=10)
+        pickImage = tk.Button(master=self.container, text="Pick Image", command=self.select_image, bg="white", fg='#282a35')
+        pickImage.pack(pady=5)
+        quitButton = tk.Button(master=self.container, text="Exit", fg="red",
+                               command=self.master.destroy)
+        quitButton.pack(side="bottom", padx=6)
 
-        self.quitButton = tk.Button(self, text="Exit", fg="red",
-                                    command=self.master.destroy)
-        self.quitButton.pack(side="bottom", padx=6, pady=10)
-
-        defaultValue = tk.StringVar(self.master)
-        textLabel = tk.Label(self.master, text="Tolerance: ")
-        #Todo: descLabel = tk.Label(self.master, text="Lower is better...")
+        container = tk.Frame(background="#282a35", width=200, height=60)
+        container.pack(pady=5)
+        defaultValue = tk.StringVar(container)
+        textLabel = tk.Label(container, text="Tolerance: ")
         self.spinBox = tk.Spinbox(
-            self.master, from_=0, to=10, values=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], command=self.assignTolerance, textvariable=defaultValue)
-        textLabel.pack(padx=6, pady=10)
-        self.spinBox.pack(padx=6, pady=10)
-        # self.spinBox.place(x=150, y=130)
+            container, from_=0, to=10, values=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            command=self.assignTolerance, textvariable=defaultValue)
+        textLabel.configure(foreground="white", bg='#282a35')
+        desc_label = tk.Label(container, text="Lower is better")
+        desc_label.configure(foreground="white", bg='#282a35')
+        desc_label.pack(side=tk.RIGHT, padx=5)
+        self.spinBox.pack(side=tk.RIGHT)
+        textLabel.pack(side=tk.LEFT, padx=5)
+
         defaultValue.set(str(self.tolerance))
-        # descLabel.pack(side="top", padx=6, pady=10, expand=tk.YES)
 
     def assignTolerance(self):
         self.tolerance = float(self.spinBox.get())
@@ -105,7 +115,7 @@ class RecognizeFace(tk.Frame):
                                   color, cv2.FILLED)
 
                     img_size = image.shape[1::-1]
-                    font_scale = (img_size[0] * img_size[1])/(1000 * 1000)
+                    font_scale = (img_size[0] * img_size[1]) / (1000 * 1000)
                     font_scale = 0.5 if font_scale < 0.5 else font_scale
                     font_scale = 3 if font_scale > 10 else font_scale
 
@@ -116,7 +126,7 @@ class RecognizeFace(tk.Frame):
                     pil_img = Image.fromarray(image)
                     width, height = pil_img.size
                     pil_img = pil_img.resize(
-                        (round(680/height*width), round(680)))
+                        (round(680 / height * width), round(680)))
 
                     img = ImageTk.PhotoImage(pil_img)
                     if self.identifiedImage is None:
@@ -130,8 +140,9 @@ class RecognizeFace(tk.Frame):
                         self.identifiedImage.image = img
 
                     if self.saveImageButton is None:
+                        self.container.config(height=110)
                         self.saveImageButton = tk.Button(
-                            self, text="Save Image", command=lambda: self.saveImage(pil_img, filename))
+                            self.container, text="Save Image", command=lambda: self.saveImage(pil_img, filename))
                         self.saveImageButton.pack(
                             side="bottom", padx=6, pady=10)
                     else:
@@ -146,13 +157,12 @@ class RecognizeFace(tk.Frame):
     def saveImage(self, image: Image, file_name):
         print("Saving image")
         image.save(".".join(file_name.split(".")[
-                   0:-1]) + "-identified." + file_name.split(".")[-1])
+                            0:-1]) + "-identified." + file_name.split(".")[-1])
         tk.messagebox.showinfo(
             "Success", "Successfully saved the image to the origial directory!")
 
 
 if __name__ == '__main__':
-
     time.sleep(1)
     populate = Populate()
     # populate.load_images()  # Use this to populate the dataset from a dataset/ directory
@@ -160,6 +170,8 @@ if __name__ == '__main__':
     populate.load_all_images()
     print("Done populating...")
     root = tk.Tk()
+    root["bg"] = "#282a35"
+    root.configure(background="#282a35")
     app = RecognizeFace(
         master=root, known_faces=populate.known_faces, known_names=populate.known_names)
     app.mainloop()
