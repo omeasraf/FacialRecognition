@@ -21,6 +21,15 @@ class Generate:
         Used for storing all the encoded data
     known_names : List
         Used for storing all the name data
+
+    FUNCTIONS
+    ----------
+    resolve -> Void
+        Initiates the resolve function
+    resolve_images -> Void
+        Resolves all the images in the known faces directory
+    save -> Void
+        Saves the data to a pickle file
     """
 
     def __init__(self) -> None:
@@ -33,11 +42,11 @@ class Generate:
                      for r, d, files in os.walk(f"{self.KNOWN_FACES_DIR}/{name}")])
         bar = progressbar.ProgressBar(maxval=count,
                                       widgets=[progressbar.Bar('⬛', '[', ']', '⬜'), ' ', progressbar.Percentage()]).start()
-        dirList = os.listdir(f"{self.KNOWN_FACES_DIR}/{name}")
-        arr = np.array(dirList)
+        dir_list = os.listdir(f"{self.KNOWN_FACES_DIR}/{name}")
+        arr = np.array(dir_list)
         newarr = np.array_split(arr, 120)
         threads = [threading.Thread(
-            target=self.resolveImages, args=[arr, name, bar, dirname]) for arr in newarr]
+            target=self.resolve_images, args=[arr, name, bar, dirname]) for arr in newarr]
         for thread in threads:
             thread.start()
             thread.join()
@@ -45,7 +54,7 @@ class Generate:
 
         bar.finish()
 
-    def resolveImages(self, arr, name, bar, dirname):
+    def resolve_images(self, arr, name, bar, dirname):
         for filename in arr:
             image = face_recognition.load_image_file(
                 f"{self.KNOWN_FACES_DIR}/{name}/{filename}")
@@ -70,8 +79,8 @@ class Generate:
 
 def main():
     print("Initiating all processes...")
-    dirList = os.listdir("Images/Known")
-    arr = np.array(dirList)
+    dir_list = os.listdir("Images/Known")
+    arr = np.array(dir_list)
     newarr = np.array_split(arr, 35)
 
     for arr in newarr:

@@ -11,11 +11,11 @@ import threading
 
 
 class RecognizeFace(tk.Frame):
-    def __init__(self, master=None, showOriginal: bool = False, known_faces=[], known_names=[]):
+    def __init__(self, master=None, show_original: bool = False, known_faces=[], known_names=[]):
         super().__init__(master)
         self.master = master
         self.master.minsize(500, 400)
-        self.showOriginal = showOriginal
+        self.show_original = show_original
         self.master.title("Face Recognition")
         self.known_faces = known_faces
         self.known_names = known_names
@@ -61,7 +61,7 @@ class RecognizeFace(tk.Frame):
             ('image files', '.png'),
             ('image files', '.jpg'),))
         if len(filename) > 0:
-            if self.showOriginal:
+            if self.show_original:
                 img = ImageTk.PhotoImage(file=filename)
                 if self.originalImage is None:
                     self.originalImage = tk.Label(image=img)
@@ -92,7 +92,7 @@ class RecognizeFace(tk.Frame):
                     matchFound = True
                     match = self.known_names[results.index(True)]
                     print(f"Match Found: {match}")
-                    # print(f"Confidence Level: {}")
+                    # Todo: print(f"Confidence Level: {}")
                     # top, right, bottom, left = face_location
                     top_left = (face_location[3], face_location[0])
                     bottom_right = (face_location[1], face_location[2])
@@ -111,15 +111,14 @@ class RecognizeFace(tk.Frame):
 
                     font_thickness = 3 if font_scale >= 2 else 1
 
-                    cv2.putText(image, match, (face_location[3], face_location[2] + 20),
+                    cv2.putText(image, match, (face_location[3] + 5, face_location[2] + 35),
                                 cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), font_thickness)
-                    print(font_scale)
-                    pilImg = Image.fromarray(image)
-                    width, height = pilImg.size
-                    pilImg = pilImg.resize(
+                    pil_img = Image.fromarray(image)
+                    width, height = pil_img.size
+                    pil_img = pil_img.resize(
                         (round(680/height*width), round(680)))
 
-                    img = ImageTk.PhotoImage(pilImg)
+                    img = ImageTk.PhotoImage(pil_img)
                     if self.identifiedImage is None:
                         self.identifiedImage = tk.Label(image=img)
                         self.identifiedImage.image = img
@@ -132,22 +131,22 @@ class RecognizeFace(tk.Frame):
 
                     if self.saveImageButton is None:
                         self.saveImageButton = tk.Button(
-                            self, text="Save Image", command=lambda: self.saveImage(pilImg, filename))
+                            self, text="Save Image", command=lambda: self.saveImage(pil_img, filename))
                         self.saveImageButton.pack(
                             side="bottom", padx=6, pady=10)
                     else:
                         self.saveImageButton.configure(
-                            command=lambda: self.saveImage(pilImg, filename))
+                            command=lambda: self.saveImage(pil_img, filename))
             if not matchFound:
                 tk.messagebox.showerror("Error", "No matches found")
         else:
             tk.messagebox.showerror(
                 "Error", "Database is empty! did you forget to populate the database?")
 
-    def saveImage(self, image, fileName):
+    def saveImage(self, image: Image, file_name):
         print("Saving image")
-        image.save(".".join(fileName.split(".")[
-                   0:-1]) + "-identified." + fileName.split(".")[-1])
+        image.save(".".join(file_name.split(".")[
+                   0:-1]) + "-identified." + file_name.split(".")[-1])
         tk.messagebox.showinfo(
             "Success", "Successfully saved the image to the origial directory!")
 
