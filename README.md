@@ -25,7 +25,7 @@ git clone https://github.com/omeasraf/FacialRecognition.git
 
 #### How to install requirements
 ```dsconfig
-pip3 -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 #### How to populate dataset
